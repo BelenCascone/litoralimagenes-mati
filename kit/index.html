@@ -130,7 +130,7 @@ function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r)}
 function waves(ctx,cx,cy,n,color,alpha){ctx.save();ctx.globalAlpha=alpha;ctx.strokeStyle=color;ctx.lineWidth=6;for(let i=1;i<=n;i++){ctx.beginPath();ctx.arc(cx,cy,i*70,Math.PI*1.05,Math.PI*1.95);ctx.stroke()}ctx.restore()}
 function head(ctx,W,area,dark){
   logo(ctx,80,62,76,dark);
-  const tag=area==="doppler"?"DOPPLER":"ECOGRAFÍA";ctx.font=font(800,26,"d");
+  const tag=area==="doppler"?"DOPPLER":area==="inst"?"CONOCENOS":"ECOGRAFÍA";ctx.font=font(800,26,"d");
   const tw=ctx.measureText(tag).width+44;const col=dark?"#fff":(area==="doppler"?C.doppler:C.azul);
   ctx.strokeStyle=col;ctx.lineWidth=3;rr(ctx,W-80-tw,74,tw,52,26);ctx.stroke();ctx.fillStyle=col;ctx.fillText(tag,W-80-tw+22,110);
 }
@@ -233,7 +233,7 @@ async function renderList(){
   const sorted=[...piezas].sort((a,b)=>(a.orden??99)-(b.orden??99)||(a.fecha||"").localeCompare(b.fecha||""));
   list.innerHTML=sorted.map(g=>`
   <article class="card" data-id="${esc(g.id)}">
-    <div class="meta"><span class="pill ${esc(g.estado||"borrador")}">${ESTADOS[g.estado]||"Borrador"}</span><span class="pill ${g.area==="doppler"?"doppler":"eco"}">${g.area==="doppler"?"Doppler":"Ecografía"}</span><span>${esc(g.semana?("Semana "+g.semana):"")} · ${g.formato==="reel"?"Reel":g.formato==="historia"?"Historia":"Carrusel"}</span></div>
+    <div class="meta"><span class="pill ${esc(g.estado||"borrador")}">${ESTADOS[g.estado]||"Borrador"}</span><span class="pill ${g.area==="doppler"?"doppler":"eco"}">${g.area==="doppler"?"Doppler":g.area==="inst"?"Institucional":"Ecografía"}</span><span>${esc(g.semana?("Semana "+g.semana):"")} · ${g.formato==="reel"?"Reel":g.formato==="historia"?"Historia":"Carrusel"}</span></div>
     <h3>${esc(g.titulo)}</h3>
     <div class="gallery ${g.formato==="reel"?"reel":""}" aria-label="Imágenes de la pieza"><p class="note">Dibujando…</p></div>
     <p class="note">Tocá «Guardar» debajo de cada imagen para bajarla y subirla a Instagram.</p>
