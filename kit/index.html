@@ -224,10 +224,10 @@ function drawFrame(f,i,n,area){
   ctx.fillStyle=dark?C.profundo:C.celeste;ctx.fillRect(0,0,W,H);
   logo(ctx,80,100,80,dark);
   if(dark){logo(ctx,(W-640)/2,430,196,true)}
-  if(!dark){ctx.fillStyle="#fff";ctx.font=font(800,62,"d");const lines=wrap(ctx,f.texto,820);const bh=lines.length*76+90;rr(ctx,80,260,920,bh,32);ctx.fill();
+  let boxEnd=260;if(!dark){ctx.fillStyle="#fff";ctx.font=font(800,62,"d");const lines=wrap(ctx,f.texto,820);const bh=lines.length*76+90;boxEnd=260+bh;rr(ctx,80,260,920,bh,32);ctx.fill();
     lines.forEach((l,k)=>{ctx.fillStyle=C.profundo;ctx.fillText(l,125,345+k*76)});}
   const v=f.visual;
-  if(v==="foto"){cover(ctx,FOTOS[f.foto||"equipo"],80,(f.texto?560:260),920,H-(f.texto?560:260)-220,f.fy);}
+  if(v==="foto"){const top=boxEnd+40;cover(ctx,FOTOS[f.foto||"equipo"],80,top,920,H-top-220,f.fy);}
   else if(["vaso","placa","estrecha","fragmento"].includes(v)){vaso(ctx,W/2,1150,v)}
   else if(v==="factores"){
     const fs=f.items||[];let y=900;fs.forEach(t=>{ctx.fillStyle="#fff";rr(ctx,140,y,800,120,60);ctx.fill();ctx.beginPath();ctx.arc(210,y+60,26,0,7);ctx.fillStyle=C.doppler;ctx.fill();
@@ -242,7 +242,7 @@ function drawFrame(f,i,n,area){
   return cv.toDataURL("image/png");
 }
 async function imagenes(p){
-  const key="v3|"+p.id+"|"+(p.version||"")+"|"+JSON.stringify(p.placas||p.escenas||[]);
+  const key="v4|"+p.id+"|"+(p.version||"")+"|"+JSON.stringify(p.placas||p.escenas||[]);
   if(cache.has(key))return cache.get(key);
   await logoReady;await fotosReady;await Promise.all(["800 40px Montserrat","700 40px Montserrat","400 40px 'Atkinson Hyperlegible'","700 40px 'Atkinson Hyperlegible'"].map(f=>document.fonts.load(f).catch(()=>{})));
   const area=p.area||"eco";
