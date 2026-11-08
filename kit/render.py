@@ -1,4 +1,4 @@
-# Uso: python3 render.py index.html pieza.json salida/
+# Uso: python3 render.py index.html pieza.json salida/  (index.html y la carpeta img/ juntos)
 # Dibuja las placas/escenas con el mismo código del tablero Litoral Lab.
 import sys, json, base64, os, subprocess
 from playwright.sync_api import sync_playwright
@@ -7,12 +7,16 @@ os.makedirs(out, exist_ok=True)
 p = json.load(open(pjson))
 with sync_playwright() as pw:
     b = pw.chromium.launch(executable_path="/usr/bin/google-chrome", args=["--no-sandbox"])
+    import http.server, threading, functools
+    d = os.path.dirname(os.path.abspath(html))
+    srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(type("Q",(http.server.SimpleHTTPRequestHandler,),{"log_message":lambda *a:None}), directory=d))
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
     pg = b.new_page()
-    pg.goto("file://" + os.path.abspath(html))
+    pg.goto(f"http://127.0.0.1:{srv.server_address[1]}/" + os.path.basename(html))
     pg.wait_for_function("typeof imagenes==='function'")
     pg.evaluate("document.fonts.ready")
     urls = pg.evaluate("async p=>await imagenes(p)", p)
-    b.close()
+    b.close(); srv.shutdown()
 files = []
 for i, u in enumerate(urls, 1):
     f = os.path.join(out, f"{p['id']}-{i:02d}.png")
